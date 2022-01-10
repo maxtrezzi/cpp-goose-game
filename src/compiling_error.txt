@@ -1,0 +1,91 @@
+In file included from /media/maxtrezzi/data/projects/cpp-goose-game/src/core.cpp:7:
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:70:48: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const SpaceIndexesVector BRIDGES = {6};
+                                                ^~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:71:48: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const SpaceIndexesVector GOOSES = {5,9,14,18,23,27};
+                                                ^~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:72:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string ADD_PLAYER_COMMAND = "add player";
+                                         ^~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:73:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string EXIT_COMMAND = "exit";
+                                         ^~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:74:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAY_COMMAND = "play";
+                                         ^~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:75:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string MOVE_PLAYER_COMMAND = "move";
+                                         ^~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:81:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string APP_MENU =
+                                         ^~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:89:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string GAME_MENU =
+                                         ^~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:96:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string ALREADY_EXISTING_PLAYER = "%s: already existing player";
+                                         ^~~~~~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:97:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYERS = "players: %s";
+                                         ^~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:98:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string UNKNOWN_COMMAND = "Unknown command";
+                                         ^~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:99:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string UNKNOWN_PLAYER = "Unknown player %s";
+                                         ^~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:100:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_NAME_IS_REQUIRED = "Player's name is required";
+                                         ^~~~~~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:101:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string BYE = "Bye Bye";
+                                         ^~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:102:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string GAME_QUITTED = "Game quitted";
+                                         ^~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:103:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string NO_PLAYERS = "No players for the game";
+                                         ^~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:104:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string INVALID_DICE_ARG = "Invalid dice argument: %s";
+                                         ^~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:105:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string START = "Start";
+                                         ^~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:106:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_MOVES_FROM_TO = "%s moves from %s to %d";
+                                         ^~~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:107:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_MOVES_AGAIN_TO = ". %s moves again and goes to %d";
+                                         ^~~~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:108:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_JUMPS_TO = ". %s jumps to %d";
+                                         ^~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:109:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_MOVES_TO_THE_BRIDGE = "%s moves from %s to The Bridge";
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:110:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_BOUNCE_TO = ". %1$s bounces! %1$s returns to %2$d";
+                                         ^~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:111:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_ROLLS = "%s rolls %d, %d. ";
+                                         ^~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:112:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PLAYER_WINS = ". %s Wins!";
+                                         ^~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:113:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string MOVE_PLAYER_NAME_IS_REQUIRED = "Command Move: Player's name is required";
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:114:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string MOVE_PLAYER_INVALID_ARGS = "Command Move: Invalid arguments";
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:115:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string PRANK = ". On %d there is %s, who returns to %s";
+                                         ^~~~~
+/media/maxtrezzi/data/projects/cpp-goose-game/src/core.hpp:116:41: warning: inline variables are only available with -std=c++17 or -std=gnu++17
+         static inline const std::string THE_GOOSE = ", The Goose";
+                                         ^~~~~~~~~
+/usr/bin/ld: /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/Scrt1.o: in function `_start':
+(.text+0x20): undefined reference to `main'
+collect2: error: ld returned 1 exit status
