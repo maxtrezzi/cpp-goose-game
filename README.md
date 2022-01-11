@@ -9,7 +9,7 @@ You should be able to build the project using other compilers without or with mi
 
 ## How to play
 
-Clone the repository on your local system, go to project root folder and write:
+Clone the repository on your local system, go to the project root folder and write:
 
 ```bash
 ./do-run.sh
