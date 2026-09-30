@@ -79,7 +79,7 @@ namespace goose_game {
         if (!getline(cin, input)) {
           break;
         }
-        if (input.find(Consts::MOVE_PLAYER_COMMAND) == 0) {
+        if (mt::starts_with_word(input, Consts::MOVE_PLAYER_COMMAND)) {
           std::string args = input.substr(Consts::MOVE_PLAYER_COMMAND.length());
 
           try {
@@ -128,7 +128,7 @@ namespace goose_game {
           break;
         }
 
-        if (input.find(Consts::ADD_PLAYER_COMMAND) == 0) {
+        if (mt::starts_with_word(input, Consts::ADD_PLAYER_COMMAND)) {
           string player_name = mt::trim_copy(input.substr(Consts::ADD_PLAYER_COMMAND.size()));
           println(app_model.addPlayer(player_name));
         } else if (input == Consts::PLAY_COMMAND) {

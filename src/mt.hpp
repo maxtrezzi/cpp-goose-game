@@ -40,6 +40,12 @@ namespace mt {
     const C* c;
   };
 
+  // true if text is the word alone, or the word followed by a space
+  inline bool starts_with_word(const std::string& text, const std::string& word) {
+      return (text.compare(0, word.size(), word) == 0)
+          && ((text.size() == word.size()) || std::isspace(static_cast<unsigned char>(text[word.size()])));
+  }
+
   // trim from start (in place)
   inline void ltrim(std::string &s) {
       s.erase(s.begin(), std::find_if(s.begin(), s.end(),
