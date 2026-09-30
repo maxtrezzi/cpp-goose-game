@@ -33,6 +33,14 @@ namespace {
       std::streambuf* oldOut;
   };
 
+  // Runs the application with the given input and returns what it prints.
+  // The checks must run after the redirect ends: doctest writes its report on std::cout.
+  std::string runApp(const std::string& input) {
+      ConsoleRedirect console {input};
+      AppView().show();
+      return console.output();
+  }
+
   bool contains(const std::string& text, const std::string& part) {
       return text.find(part) != std::string::npos;
   }
@@ -70,32 +78,42 @@ TEST_CASE("MoveArgs parsing") {
 
 TEST_CASE("AppView") {
     SUBCASE("adds players and exits") {
-        ConsoleRedirect console {"add player Pippo\nadd player Pippo\nfoo\nexit\n"};
-        AppView().show();
-        CHECK(contains(console.output(), "Player Pippo successfully added"));
-        CHECK(contains(console.output(), "Pippo: already existing player"));
-        CHECK(contains(console.output(), "Unknown command"));
-        CHECK(contains(console.output(), "Bye Bye"));
+        std::string output = runApp("add player Pippo\nadd player Pippo\nfoo\nexit\n");
+        CHECK(contains(output, "Player Pippo successfully added"));
+        CHECK(contains(output, "Pippo: already existing player"));
+        CHECK(contains(output, "Unknown command"));
+        CHECK(contains(output, "Bye Bye"));
     }
 
     SUBCASE("stops at the end of the input") {
-        ConsoleRedirect console {"add player Pippo\nplay\n"};
-        AppView().show();
-        CHECK_FALSE(contains(console.output(), "Bye Bye"));
+        std::string output = runApp("add player Pippo\nplay\n");
+        CHECK_FALSE(contains(output, "Bye Bye"));
+    }
+
+    SUBCASE("a command must be followed by a space") {
+        std::string output = runApp("add playerPippo\nadd player\nexit\n");
+        CHECK_FALSE(contains(output, "successfully added"));
+        CHECK(contains(output, "Unknown command"));
+        CHECK(contains(output, "Player's name is required"));
     }
 
     SUBCASE("does not start a game without players") {
-        ConsoleRedirect console {"play\nexit\n"};
-        AppView().show();
-        CHECK(contains(console.output(), "No players for the game"));
+        std::string output = runApp("play\nexit\n");
+        CHECK(contains(output, "No players for the game"));
+    }
+
+    SUBCASE("the move command must be followed by a space") {
+        std::string output = runApp("add player Pippo\nplay\nmovePippo 1, 2\nmove\nexit\nexit\n");
+        CHECK_FALSE(contains(output, "Pippo rolls"));
+        CHECK(contains(output, "Unknown command"));
+        CHECK(contains(output, "Command Move: Player's name is required"));
     }
 
     SUBCASE("plays a whole game") {
-        ConsoleRedirect console {"add player Pippo\nplay\n"
-                                 "move Pippo 6, 6\nmove Pippo 6, 6\nmove Pippo 6, 6\n"
-                                 "move Pippo 6, 6\nmove Pippo 6, 6\nmove Pippo 1, 2\nexit\n"};
-        AppView().show();
-        CHECK(contains(console.output(), "Pippo rolls 1, 2. Pippo moves from 60 to 63. Pippo Wins!"));
-        CHECK(contains(console.output(), "Bye Bye"));
+        std::string output = runApp("add player Pippo\nplay\n"
+                                    "move Pippo 6, 6\nmove Pippo 6, 6\nmove Pippo 6, 6\n"
+                                    "move Pippo 6, 6\nmove Pippo 6, 6\nmove Pippo 1, 2\nexit\n");
+        CHECK(contains(output, "Pippo rolls 1, 2. Pippo moves from 60 to 63. Pippo Wins!"));
+        CHECK(contains(output, "Bye Bye"));
     }
 }
