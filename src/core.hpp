@@ -63,9 +63,9 @@ namespace goose_game {
 
     class Consts final {
       public:
-        static const Board::size_type DICE_FACES = 6;
-        static const Board::size_type BRIDGE_SPACES_TO_ADVANCE = 6;
-        static const Board::size_type SPACE_COUNT = 64;
+        static constexpr Board::size_type DICE_FACES = 6;
+        static constexpr Board::size_type BRIDGE_SPACES_TO_ADVANCE = 6;
+        static constexpr Board::size_type SPACE_COUNT = 64;
         static inline const SpaceIndexesVector BRIDGES = {6};
         static inline const SpaceIndexesVector GOOSES = {5,9,14,18,23,27};
         static inline const std::string ADD_PLAYER_COMMAND = "add player";

@@ -17,3 +17,15 @@ Clone the repository on your local system, go to the project root folder and wri
 
 `do-all.sh` builds the game (`do-build.sh`) and then starts it (`do-run.sh`).
 After the first build you can use `./do-run.sh` directly.
+
+## How to run the tests
+
+The unit tests are in the `tests` folder and use [doctest](https://github.com/doctest/doctest)
+(version 2.4.12, MIT license), included as a single header in `third_party/doctest`.
+To build and run them, write:
+
+```bash
+./do-test.sh
+```
+
+You can pass doctest options to the script, for example `./do-test.sh --success` or `./do-test.sh -tc="Board"`.
