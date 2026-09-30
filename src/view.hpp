@@ -14,6 +14,7 @@ namespace goose_game {
       protected:
         View* println(const std::string &line);
       public:
+        virtual ~View() = default;
         virtual View* show()=0;
     };
 
@@ -21,19 +22,19 @@ namespace goose_game {
        public:
          MoveArgs(int firstDice, int secondDice, const std::string& playerName);
 
-         inline bool isComplete() {
+         inline bool isComplete() const {
             return (secondDice != 0);
          }
 
-         inline int getFirstDice() {
+         inline int getFirstDice() const {
             return firstDice;
          }
 
-         inline int getSecondDice() {
+         inline int getSecondDice() const {
             return secondDice;
          }
 
-         inline const std::string& getPlayerName() {
+         inline const std::string& getPlayerName() const {
             return playerName;
          }
 
@@ -49,8 +50,8 @@ namespace goose_game {
       private:
         core::Game* game;
       public:
-        GameView(core::Game* game);
-        virtual View* show();
+        explicit GameView(core::Game* game);
+        View* show() override;
     };
 
 
@@ -61,7 +62,7 @@ namespace goose_game {
         AppView* startNewGame();
       public:
         AppView();
-        virtual View* show();
+        View* show() override;
     };
   }
 }

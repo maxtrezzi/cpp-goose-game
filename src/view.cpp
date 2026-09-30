@@ -26,18 +26,18 @@ namespace goose_game {
       std::stringstream stream {string};
       std::string cur;
       int countTokens {0}, firstDice {0}, secondDice{0};
-      std::string playerName="";
+      std::string playerName;
 
-      stream >> cur;
-      playerName = cur;
-      ++countTokens;
+      if (stream >> playerName) {
+        ++countTokens;
+      }
 
       while (getline(stream, cur, ',')) {
         int i;
         mt::trim(cur);
         try {
             i = std::stoi(cur);
-        } catch (std::invalid_argument& e) {
+        } catch (const std::logic_error&) { // invalid_argument or out_of_range
             throw invalid_argument(mt::string_format(Messages::INVALID_DICE_ARG, cur.c_str()));
         }
 
@@ -55,7 +55,7 @@ namespace goose_game {
         }
       }
 
-      if ( countTokens == 0) {
+      if (playerName.empty()) {
           throw invalid_argument(Messages::MOVE_PLAYER_NAME_IS_REQUIRED);
       }
       if ( (countTokens != 1)  && (countTokens != 3) ) {
@@ -76,7 +76,9 @@ namespace goose_game {
       while (!game->hasWinner()) {
         cout << core::Messages::GAME_MENU;
         std::string input;
-        getline(cin, input);
+        if (!getline(cin, input)) {
+          break;
+        }
         if (input.find(Consts::MOVE_PLAYER_COMMAND) == 0) {
           std::string args = input.substr(Consts::MOVE_PLAYER_COMMAND.length());
 
@@ -87,7 +89,7 @@ namespace goose_game {
             } else {
                 cout << game->moveThrowingDice(moveArgs.getPlayerName()) << "\n";
             }
-          } catch (exception& e) {
+          } catch (const exception& e) {
             cout << "error\n" <<  e.what();
           }
         } else if (input == Consts::EXIT_COMMAND) {
@@ -109,7 +111,11 @@ namespace goose_game {
     };
 
     AppView* AppView::startNewGame() {
-      std::unique_ptr<Game> game(app_model.createNewGame());  
+      if (app_model.getPlayers().isEmpty()) {
+        println(Messages::NO_PLAYERS);
+        return this;
+      }
+      auto game = app_model.createNewGame();
       GameView(game.get()).show();
       return this;
     }
@@ -118,7 +124,9 @@ namespace goose_game {
       while (true) {
         println(Messages::APP_MENU);
         string input;
-        getline(cin, input);
+        if (!getline(cin, input)) {
+          break;
+        }
 
         if (input.find(Consts::ADD_PLAYER_COMMAND) == 0) {
           string player_name = mt::trim_copy(input.substr(Consts::ADD_PLAYER_COMMAND.size()));

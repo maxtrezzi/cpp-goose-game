@@ -14,24 +14,21 @@ namespace goose_game {
     /**
       * Dice class
       */
-    Dice::Dice() : rd{}, mt{rd()}, dist{1, 6} {
-    }
-
-    Dice::Dice(Dice&& other) : rd{}, mt{rd()}, dist{1, 6} {
+    Dice::Dice() : rd{}, mt{rd()}, dist{1, Consts::DICE_FACES} {
     }
 
 
     /**
       *  Board class
       */
-    Board::Board(const size_type size, const SpaceIndexesVector bridges, const SpaceIndexesVector gooses) {
+    Board::Board(const size_type size, const SpaceIndexesVector& bridges, const SpaceIndexesVector& gooses) {
         spaces.resize(size, NORMAL);
 
         for (size_type index: bridges) {
             if ( index < size ) {
                 spaces[index] = BRIDGE;
             } else {
-                throw new invalid_argument("Bridges in Board constructor");
+                throw invalid_argument("Bridges in Board constructor");
             }
         }
 
@@ -39,7 +36,7 @@ namespace goose_game {
             if ( index < size ) {
                 spaces[index] = GOOSE;
             } else {
-                throw new invalid_argument("Gooses in Board constructor");
+                throw invalid_argument("Gooses in Board constructor");
             }
         }
 
@@ -47,7 +44,6 @@ namespace goose_game {
     }
 
     bool Board::isNormalPosition(const size_type position) const {
-        assert (position >= 0) ;
         if (position > getLastIndex()) {
             return false;
         } else {
@@ -63,7 +59,7 @@ namespace goose_game {
     }
 
     bool operator == (const Player& left, const Player& right) {
-    	return (left.getName() == right.getName());
+        return (left.getName() == right.getName());
     }
 
     /*
@@ -71,41 +67,41 @@ namespace goose_game {
      */
 
     Players& Players::addPlayer(const Player& player) {
-    	if (!hasPlayer(player)) {
-    		collection.insert(player);
-    	} else {
-    		throw new invalid_argument("player in Players::addPlayer");
-    	}
-    	return *this;
+        if (!hasPlayer(player)) {
+            collection.insert(player);
+        } else {
+            throw invalid_argument(mt::string_format(Messages::ALREADY_EXISTING_PLAYER, player.getName().c_str()));
+        }
+        return *this;
     }
 
     std::string Players::getAllPlayersAsString() const {
-         std::string comma = "";
-         std::string result = "";
+        std::string comma = "";
+        std::string result = "";
 
-		     for (auto p : collection) {
-		 	       result.append(comma);
-		 	       result.append(p.getName());
-		 	       comma = ", ";
-		     }
+        for (const auto& p : collection) {
+            result.append(comma);
+            result.append(p.getName());
+            comma = ", ";
+        }
 
-         return result;
+        return result;
     }
 
     /**
       * GamePlayer
       */
-    GamePlayer::GamePlayer(Game* game, const Player* player) : game(game), player(player), position {0} {
+    GamePlayer::GamePlayer(Game* game, const Player* player) : player(player), game(game), position {0} {
     }
 
 
     std::string GamePlayer::moveBy(const Board::size_type firstDice, const Board::size_type secondDice) {
-        assert ( (firstDice > 0) && (firstDice <= 6) );
-        assert ( (secondDice > 0) && (secondDice <= 6) );
+        assert ( (firstDice > 0) && (firstDice <= Consts::DICE_FACES) );
+        assert ( (secondDice > 0) && (secondDice <= Consts::DICE_FACES) );
         auto newPosition = position + firstDice + secondDice;
-        auto board = game->getBoard();
+        const Board& board = game->getBoard();
         std::string message;
-        message.append(mt::string_format(Messages::PLAYER_ROLLS, player->getName().c_str(), firstDice, secondDice));
+        message.append(mt::string_format(Messages::PLAYER_ROLLS, getName(), firstDice, secondDice));
         message.append(getTextForTargetSpace(newPosition, false));
         while ((!board.isNormalPosition(newPosition) && (!game->hasWinner()))) {
             if (board.getLastIndex() >= newPosition) {
@@ -117,14 +113,14 @@ namespace goose_game {
                            .append(getTextForTargetSpace(newPosition, true));
                 } else if (spaceType == BRIDGE) {
                     newPosition += Consts::BRIDGE_SPACES_TO_ADVANCE;
-                    message.append(mt::string_format(Messages::PLAYER_JUMPS_TO, player->getName().c_str(), newPosition));
+                    message.append(mt::string_format(Messages::PLAYER_JUMPS_TO, getName(), newPosition));
                 } else {
                     game->setWinner(*this);
-                    message.append(mt::string_format(Messages::PLAYER_WINS, player->getName().c_str()));
+                    message.append(mt::string_format(Messages::PLAYER_WINS, getName()));
                 }
             } else {
                 newPosition = board.getLastIndex() - (newPosition - board.getLastIndex());
-                message.append(mt::string_format(Messages::PLAYER_BOUNCE_TO, player->getName().c_str(), newPosition));
+                message.append(mt::string_format(Messages::PLAYER_BOUNCE_TO, getName(), newPosition));
             }
         }
         message.append(processPrank(position, newPosition));
@@ -139,7 +135,7 @@ namespace goose_game {
             if (colliding != nullptr) {
                 colliding->forceMove(oldPosition);
                 return mt::string_format(Messages::PRANK, newPosition,
-                        colliding->getPlayer()->getName().c_str(), getPositionAsString(oldPosition).c_str());
+                        colliding->getName(), getPositionAsString(oldPosition).c_str());
             }
         }
 
@@ -147,19 +143,15 @@ namespace goose_game {
     }
 
     std::string GamePlayer::getTextForTargetSpace(const Board::size_type newPosition, const bool again) {
-        auto board = game->getBoard();
+        const Board& board = game->getBoard();
         auto index = std::min(board.getLastIndex(), newPosition);
-        auto spaceType = board.get(index);
-        std:string ret;
-        if (spaceType == BRIDGE) {
-            ret = mt::string_format(Messages::PLAYER_MOVES_TO_THE_BRIDGE, player->getName().c_str(), getPositionAsString(position).c_str());
+        if (board.get(index) == BRIDGE) {
+            return mt::string_format(Messages::PLAYER_MOVES_TO_THE_BRIDGE, getName(), getPositionAsString(position).c_str());
         } else if (again) {
-            ret = mt::string_format(Messages::PLAYER_MOVES_AGAIN_TO, player->getName().c_str(), index);
+            return mt::string_format(Messages::PLAYER_MOVES_AGAIN_TO, getName(), index);
         } else {
-            ret = mt::string_format(Messages::PLAYER_MOVES_FROM_TO, player->getName().c_str(), getPositionAsString(position).c_str(), index);
+            return mt::string_format(Messages::PLAYER_MOVES_FROM_TO, getName(), getPositionAsString(position).c_str(), index);
         }
-        return ret;
-
     }
 
 
@@ -167,7 +159,7 @@ namespace goose_game {
      *  GamePlayers
      */
     GamePlayers::GamePlayers (Game* game, const Players& players) : game {game} {
-        for (auto& player : players.getAll()) {
+        for (const auto& player : players.getAll()) {
             gamePlayers.insert(collection_type::value_type(player.getName(),
               GamePlayer{game,&player} ) );
         }
@@ -175,12 +167,7 @@ namespace goose_game {
 
     GamePlayer* GamePlayers::getPlayerByName(const std::string& name) {
       auto iter = gamePlayers.find(name);
-      if ( iter != gamePlayers.end() ) {
-        GamePlayer* gp = &(*iter).second;
-        return gp;
-      } else {
-        return nullptr;
-      }
+      return (iter != gamePlayers.end()) ? &iter->second : nullptr;
     }
 
     GamePlayer* GamePlayers::findPlayerOnSpace (const Board::size_type space, const GamePlayer* playerToExclude) {
@@ -195,16 +182,13 @@ namespace goose_game {
     /**
       * Game
       */
-    Game::Game(const Players& players) :  players(this, players), board {Consts::SPACE_COUNT, Consts::BRIDGES, Consts::GOOSES} {
-    }
-
-    Game::Game(Game&& other) : players (other.players), board(other.board) {
+    Game::Game(const Players& players) : board {Consts::SPACE_COUNT, Consts::BRIDGES, Consts::GOOSES}, players(this, players) {
     }
 
     std::string Game::movePlayer(const std::string& name, Board::size_type firstDice, Board::size_type secondDice) {
       assert ( !name.empty() );
-      assert ( (firstDice > 0) && (firstDice <= 6) );
-      assert ( (secondDice > 0) && (secondDice <= 6) );
+      assert ( (firstDice > 0) && (firstDice <= Consts::DICE_FACES) );
+      assert ( (secondDice > 0) && (secondDice <= Consts::DICE_FACES) );
       GamePlayer* player = players.getPlayerByName(name);
       if (player != nullptr) {
           return player->moveBy(firstDice, secondDice);
