@@ -12,8 +12,8 @@ You should be able to build the project using other compilers without or with mi
 Clone the repository on your local system, go to the project root folder and write:
 
 ```bash
-./do-run.sh
+./do-all.sh
 ```
 
-
-
+`do-all.sh` builds the game (`do-build.sh`) and then starts it (`do-run.sh`).
+After the first build you can use `./do-run.sh` directly.

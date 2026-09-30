@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
@@ -18,8 +19,6 @@ namespace goose_game {
     class Dice {
         public:
             Dice();
-
-            Dice(Dice&& other);
 
             inline unsigned int roll() {
                 return dist(mt);
@@ -44,11 +43,11 @@ namespace goose_game {
         public:
             typedef SpaceTypeVector::size_type size_type;
 
-            Board(const size_type size, const SpaceIndexesVector bridges, const SpaceIndexesVector gooses);
+            Board(const size_type size, const SpaceIndexesVector& bridges, const SpaceIndexesVector& gooses);
 
             inline SpaceType get(const size_type position) const {
-                //here I know that size_type cannot be negative, but is it right to assume this here?
-                assert ( position <= spaces.size() );
+                // size_type is unsigned, so only the upper bound needs a check
+                assert ( position < spaces.size() );
 
                 return spaces[position];
             }
@@ -64,6 +63,7 @@ namespace goose_game {
 
     class Consts final {
       public:
+        static const Board::size_type DICE_FACES = 6;
         static const Board::size_type BRIDGE_SPACES_TO_ADVANCE = 6;
         static const Board::size_type SPACE_COUNT = 64;
         static inline const SpaceIndexesVector BRIDGES = {6};
@@ -103,16 +103,16 @@ namespace goose_game {
         static inline const std::string NO_PLAYERS = "No players for the game\n";
         static inline const std::string INVALID_DICE_ARG = "Invalid dice argument: %s\n";
         static inline const std::string START = "Start";
-        static inline const std::string PLAYER_MOVES_FROM_TO = "%s moves from %s to %d";
-        static inline const std::string PLAYER_MOVES_AGAIN_TO = ". %s moves again and goes to %d";
-        static inline const std::string PLAYER_JUMPS_TO = ". %s jumps to %d";
+        static inline const std::string PLAYER_MOVES_FROM_TO = "%s moves from %s to %zu";
+        static inline const std::string PLAYER_MOVES_AGAIN_TO = ". %s moves again and goes to %zu";
+        static inline const std::string PLAYER_JUMPS_TO = ". %s jumps to %zu";
         static inline const std::string PLAYER_MOVES_TO_THE_BRIDGE = "%s moves from %s to The Bridge";
-        static inline const std::string PLAYER_BOUNCE_TO = ". %1$s bounces! %1$s returns to %2$d";
-        static inline const std::string PLAYER_ROLLS = "%s rolls %d, %d. ";
+        static inline const std::string PLAYER_BOUNCE_TO = ". %1$s bounces! %1$s returns to %2$zu";
+        static inline const std::string PLAYER_ROLLS = "%s rolls %zu, %zu. ";
         static inline const std::string PLAYER_WINS = ". %s Wins!\n";
         static inline const std::string MOVE_PLAYER_NAME_IS_REQUIRED = "Command Move: Player's name is required\n";
         static inline const std::string MOVE_PLAYER_INVALID_ARGS = "Command Move: Invalid arguments\n";
-        static inline const std::string PRANK = ". On %d there is %s, who returns to %s";
+        static inline const std::string PRANK = ". On %zu there is %s, who returns to %s";
         static inline const std::string THE_GOOSE = ", The Goose";
     }; //Messages
 
@@ -188,8 +188,12 @@ namespace goose_game {
                 return *this;
             }
 
-            inline std::string getPositionAsString(const Board::size_type position) const {
+            static inline std::string getPositionAsString(const Board::size_type position) {
                 return (position > 0) ? std::to_string(position) : Messages::START;
+            }
+
+            inline const char* getName() const {
+                return player->getName().c_str();
             }
 
             std::string processPrank(const Board::size_type oldPosition, const Board::size_type newPosition);
@@ -218,11 +222,10 @@ namespace goose_game {
             collection_type gamePlayers;
     };
 
-    class Game {
+    // A Game cannot be copied or moved: its GamePlayers keep a pointer to it
+    class Game : private mt::NonAssignable {
         public:
             explicit Game(const Players& players);
-
-            Game(Game&& other);
 
             inline GamePlayer* findPlayerOnSpace(Board::size_type space, const GamePlayer* playerToExclude) {
                 return players.findPlayerOnSpace(space, playerToExclude);
@@ -231,7 +234,7 @@ namespace goose_game {
             std::string movePlayer(const std::string& name, Board::size_type firstDice, Board::size_type secondDice);
             std::string moveThrowingDice(const std::string& playerName);
 
-            inline Board& getBoard() {
+            inline const Board& getBoard() const {
                 return board;
             }
 
@@ -240,22 +243,18 @@ namespace goose_game {
                 return *this;
             }
 
-            inline GamePlayer& getGamePlayer(const std::string& name) {
-                return *players.getPlayerByName(name);
-            }
-
-            inline const GamePlayer& getWinner() {
+            inline const GamePlayer& getWinner() const {
+                assert ( hasWinner() );
                 return *winner;
             }
 
-            inline bool hasWinner() {
-                bool ret = winner != nullptr; 
-                return ret;
+            inline bool hasWinner() const {
+                return winner != nullptr;
             }
         private:
             Board board;
             GamePlayers players;
-            GamePlayer* winner;
+            GamePlayer* winner = nullptr;
             Dice dice1;
             Dice dice2;
     };
@@ -265,17 +264,23 @@ namespace goose_game {
       public:
         inline App() {};
         inline std::string addPlayer(const std::string& name) {
+            if (name.empty()) {
+              return Messages::PLAYER_NAME_IS_REQUIRED;
+            }
+            if (players.hasPlayer(Player(name))) {
+              return mt::string_format(Messages::ALREADY_EXISTING_PLAYER, name.c_str());
+            }
             try {
               players.addPlayer(Player(name));
               return mt::string_format(Messages::PLAYER_ADDED, name.c_str());
-            } catch (std::exception& e) {
+            } catch (const std::exception& e) {
               return mt::string_format(Messages::ADD_PLAYER_ERROR, name.c_str(), e.what());
             }
         };
 
-        inline Game* createNewGame() {
-            return new Game(players);
-          };
+        inline std::unique_ptr<Game> createNewGame() const {
+            return std::make_unique<Game>(players);
+        };
         inline const Players& getPlayers() const {
             return players;
         };
@@ -285,4 +290,4 @@ namespace goose_game {
   } // namespace core
 } // namespace goose_game
 
-#endif //_H
+#endif // CORE_H
